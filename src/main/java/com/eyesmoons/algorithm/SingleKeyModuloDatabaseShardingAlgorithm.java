@@ -11,6 +11,9 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
 
     private int dbCount = 1;
 
+    /**
+     * sql 中关键字 匹配符为 =的时候，表的路由函数
+     */
     @Override
     public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
@@ -21,6 +24,9 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * sql 中关键字 匹配符为 in 的时候，表的路由函数  
+     */
     @Override
     public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
@@ -35,6 +41,9 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
         return result;
     }
 
+    /**
+     * sql 中关键字 匹配符为 between的时候，表的路由函数
+     */
     @Override
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
