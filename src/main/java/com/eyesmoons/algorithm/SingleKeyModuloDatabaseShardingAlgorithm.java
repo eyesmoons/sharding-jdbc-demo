@@ -4,20 +4,20 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 import com.dangdang.ddframe.rdb.sharding.api.ShardingValue;
-import com.dangdang.ddframe.rdb.sharding.api.strategy.database.SingleKeyDatabaseShardingAlgorithm;
+import com.dangdang.ddframe.rdb.sharding.api.strategy.table.SingleKeyTableShardingAlgorithm;
 import com.google.common.collect.Range;
 
-public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKeyDatabaseShardingAlgorithm<Integer> {
+public final class SingleKeyModuloTableShardingAlgorithm implements SingleKeyTableShardingAlgorithm<Integer> {
 
-    private int dbCount = 1;
+    private int tableCount = 1;
 
     /**
-     * sql 中关键字 匹配符为 =的时候，表的路由函数
+     * sql 中 = 操作时，table的映射
      */
     @Override
     public String doEqualSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
         for (String each : availableTargetNames) {
-            if (each.endsWith(shardingValue.getValue() % dbCount + "")) {
+            if (each.endsWith(shardingValue.getValue() % tableCount + "")) {
                 return each;
             }
         }
@@ -25,16 +25,16 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
     }
 
     /**
-     * sql 中关键字 匹配符为 in 的时候，表的路由函数  
+     * sql 中 in 操作时，table的映射
      */
     @Override
     public Collection<String> doInSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        Collection<String> result = new LinkedHashSet<String>(availableTargetNames.size());
         Collection<Integer> values = shardingValue.getValues();
         for (Integer value : values) {
-            for (String dataSourceName : availableTargetNames) {
-                if (dataSourceName.endsWith(value % dbCount + "")) {
-                    result.add(dataSourceName);
+            for (String tableNames : availableTargetNames) {
+                if (tableNames.endsWith(value % tableCount + "")) {
+                    result.add(tableNames);
                 }
             }
         }
@@ -42,15 +42,15 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
     }
 
     /**
-     * sql 中关键字 匹配符为 between的时候，表的路由函数
+     * sql 中 between 操作时，table的映射
      */
     @Override
     public Collection<String> doBetweenSharding(final Collection<String> availableTargetNames, final ShardingValue<Integer> shardingValue) {
-        Collection<String> result = new LinkedHashSet<>(availableTargetNames.size());
+        Collection<String> result = new LinkedHashSet<String>(availableTargetNames.size());
         Range<Integer> range = shardingValue.getValueRange();
         for (Integer i = range.lowerEndpoint(); i <= range.upperEndpoint(); i++) {
             for (String each : availableTargetNames) {
-                if (each.endsWith(i % dbCount + "")) {
+                if (each.endsWith(i % tableCount + "")) {
                     result.add(each);
                 }
             }
@@ -59,16 +59,15 @@ public final class SingleKeyModuloDatabaseShardingAlgorithm implements SingleKey
     }
 
     /**
-     * 设置database分库的个数
+     * 设置分表的个数
      *
-     * @param dbCount
+     * @param tableCount
      */
-    public void setDbCount(int dbCount) {
-        this.dbCount = dbCount;
+    public void setTableCount(int tableCount) {
+        this.tableCount = tableCount;
     }
 
-
-    public int getDbCount() {
-        return dbCount;
+    public int getTableCount() {
+        return tableCount;
     }
 }
