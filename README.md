@@ -1,6 +1,8 @@
 # sharding-jdbc-demo
 用到的技术：sharding-jdbc + spring + maven
+
 使用步骤：
+
 0.将项目导入eclipse
 
 1.使用sql下的init.sql创建数据库和数据表
